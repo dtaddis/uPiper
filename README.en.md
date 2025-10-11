@@ -112,8 +112,11 @@ Download the latest package from [Releases](https://github.com/ayutaz/uPiper/rel
 - ✅ Android (ARM64/ARMv7/x86/x86_64)
 - ✅ iOS (ARM64, iOS 11.0+) - **NEW!**
 
-### Not Supported
-- ❌ WebGL - Under investigation (future support planned via piper-plus integration)
+### In Development
+- 🚧 WebGL - Implementation plan completed ([Issue #62](https://github.com/ayutaz/uPiper/issues/62))
+  - Unity.InferenceEngine WebGL support confirmed
+  - Planning on-demand resource loading to bypass 100MB limit
+  - Details: [WebGL Implementation Strategy](docs/webgl-implementation-strategy.md)
 
 ## Build and Package Creation
 

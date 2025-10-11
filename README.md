@@ -122,8 +122,11 @@ Package Managerからインストール後、**必ず以下の手順でデータ
 - ✅ Android (ARM64/ARMv7/x86/x86_64)
 - ✅ iOS (ARM64, iOS 11.0+) - **NEW!**
 
-### 未対応
-- ❌ WebGL - 技術調査中（piper-plus連携により将来対応予定）
+### 開発中
+- 🚧 WebGL - 実装計画策定完了（[Issue #62](https://github.com/ayutaz/uPiper/issues/62)）
+  - Unity.InferenceEngineはWebGL対応済み
+  - オンデマンドリソース読み込みによる100MB制限の回避を計画中
+  - 詳細: [WebGL実装戦略](docs/webgl-implementation-strategy.md)
 
 ## ビルドとパッケージ作成
 
