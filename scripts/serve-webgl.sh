@@ -16,18 +16,32 @@ echo -e "${GREEN}=== uPiper WebGL Local Server ===${NC}"
 cd "$(dirname "$0")/.."
 PROJECT_ROOT=$(pwd)
 
-# ビルドディレクトリ
-BUILD_DIR="$PROJECT_ROOT/Build/WebGL"
+# ビルドディレクトリを自動検出
+# Unity Editor からビルド → Build/Web
+# コマンドラインからビルド → Build/WebGL
+BUILD_DIR=""
+if [ -d "$PROJECT_ROOT/Build/Web" ]; then
+    BUILD_DIR="$PROJECT_ROOT/Build/Web"
+    echo "Detected Unity Editor build"
+elif [ -d "$PROJECT_ROOT/Build/WebGL" ]; then
+    BUILD_DIR="$PROJECT_ROOT/Build/WebGL"
+    echo "Detected command-line build"
+fi
 
 # ポート番号（デフォルト: 8000）
 PORT="${1:-8000}"
 
 # ビルドディレクトリの存在確認
-if [ ! -d "$BUILD_DIR" ]; then
-    echo -e "${YELLOW}Build directory not found: $BUILD_DIR${NC}"
+if [ -z "$BUILD_DIR" ] || [ ! -d "$BUILD_DIR" ]; then
+    echo -e "${YELLOW}Build directory not found${NC}"
+    echo ""
+    echo "Searched locations:"
+    echo "  - $PROJECT_ROOT/Build/Web (Unity Editor)"
+    echo "  - $PROJECT_ROOT/Build/WebGL (command-line)"
     echo ""
     echo "Please build WebGL first:"
-    echo "  ./scripts/build-webgl.sh"
+    echo "  - Unity Editor: File > Build Settings > Build"
+    echo "  - Command-line: ./scripts/build-webgl.sh"
     echo ""
     exit 1
 fi
