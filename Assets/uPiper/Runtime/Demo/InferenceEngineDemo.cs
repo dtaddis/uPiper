@@ -904,10 +904,28 @@ namespace uPiper.Demo
                     PiperLogger.LogInfo($"Fallback phonemes ({phonemes.Length}): {string.Join(" ", phonemes)}");
                 }
 #else
-                // WebGL is not supported for Japanese
+                // WebGL platform - use WebGLTestPhonemizer for Japanese
                 if (language == "ja")
                 {
-                    throw new Exception("Japanese text-to-speech is not supported on WebGL platform. OpenJTalk native library is required.");
+                    // Create WebGLTestPhonemizer for testing
+                    var webglPhonemizer = new uPiper.Core.Phonemizers.WebGL.WebGLTestPhonemizer();
+                    try
+                    {
+                        PiperLogger.LogDebug("[InferenceEngineDemo] Using WebGLTestPhonemizer for Japanese text");
+                        var phonemeResult = await webglPhonemizer.PhonemizeAsync(_inputField.text, language);
+                        phonemes = phonemeResult.Phonemes;
+                        PiperLogger.LogInfo($"WebGLTestPhonemizer phonemes ({phonemes.Length}): {string.Join(" ", phonemes)}");
+
+                        // Show phoneme details in UI
+                        if (_phonemeDetailsText != null)
+                        {
+                            _phonemeDetailsText.text = $"WebGLTestPhonemizer: {string.Join(" ", phonemes)}";
+                        }
+                    }
+                    finally
+                    {
+                        webglPhonemizer.Dispose();
+                    }
                 }
                 else
                 {
