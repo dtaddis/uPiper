@@ -272,3 +272,6 @@ Assets/uPiper/Samples/
 
 # Development environment - platform specific plugins
 # Assets/uPiper/Plugins/macOS/  # Commented out to include macOS plugin in repository
+
+# OpenJTalk WASM dictionary data (too large for Git, generated from parts)
+Assets/StreamingAssets/openjtalk-unity.data
