@@ -227,7 +227,7 @@ namespace uPiper.Core.Phonemizers
 
                     if (isChiSound)
                     {
-                        result.Add("\ue00e"); // PUA for "ch"
+                        result.Add("\ue00a"); // PUA for "ch" (same as "ty" - ID 32)
                         continue;
                     }
                 }

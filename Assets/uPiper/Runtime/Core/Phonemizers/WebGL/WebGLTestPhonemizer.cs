@@ -17,13 +17,13 @@ namespace uPiper.Core.Phonemizers.WebGL
         private static readonly Dictionary<string, string[]> TestPatterns = new()
         {
             // こんにちは (konnichiwa)
-            { "こんにちは", new[] { "k", "o", "N", "\ue00e", "i", "\ue00e", "i", "w", "a" } },
-            { "konnichiwa", new[] { "k", "o", "N", "\ue00e", "i", "\ue00e", "i", "w", "a" } },
+            { "こんにちは", new[] { "k", "o", "N", "\ue00a", "i", "\ue00a", "i", "w", "a" } },
+            { "konnichiwa", new[] { "k", "o", "N", "\ue00a", "i", "\ue00a", "i", "w", "a" } },
 
             // 小さい (chiisai) - contains "ち" (chi)
-            { "小さい", new[] { "\ue00e", "i", "i", "s", "a", "i" } },
-            { "chiisai", new[] { "\ue00e", "i", "i", "s", "a", "i" } },
-            { "ちいさい", new[] { "\ue00e", "i", "i", "s", "a", "i" } },
+            { "小さい", new[] { "\ue00a", "i", "i", "s", "a", "i" } },
+            { "chiisai", new[] { "\ue00a", "i", "i", "s", "a", "i" } },
+            { "ちいさい", new[] { "\ue00a", "i", "i", "s", "a", "i" } },
 
             // 続ける (tsuzukeru) - contains "つ" (tsu)
             { "続ける", new[] { "\ue00f", "u", "z", "u", "k", "e", "r", "u" } },
@@ -35,9 +35,9 @@ namespace uPiper.Core.Phonemizers.WebGL
             { "ohayou", new[] { "o", "h", "a", "y", "o", "u" } },
 
             // 遅刻 (chikoku) - contains "ち" (chi)
-            { "遅刻", new[] { "\ue00e", "i", "k", "o", "k", "u" } },
-            { "chikoku", new[] { "\ue00e", "i", "k", "o", "k", "u" } },
-            { "ちこく", new[] { "\ue00e", "i", "k", "o", "k", "u" } },
+            { "遅刻", new[] { "\ue00a", "i", "k", "o", "k", "u" } },
+            { "chikoku", new[] { "\ue00a", "i", "k", "o", "k", "u" } },
+            { "ちこく", new[] { "\ue00a", "i", "k", "o", "k", "u" } },
 
             // 伝える (tsutaeru) - contains "つ" (tsu)
             { "伝える", new[] { "\ue00f", "u", "t", "a", "e", "r", "u" } },
