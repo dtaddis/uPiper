@@ -17,8 +17,8 @@ namespace uPiper.Core.Phonemizers.WebGL
         private static readonly Dictionary<string, string[]> TestPatterns = new()
         {
             // こんにちは (konnichiwa)
-            { "こんにちは", new[] { "k", "o", "N", "\ue00a", "i", "\ue00a", "i", "w", "a" } },
-            { "konnichiwa", new[] { "k", "o", "N", "\ue00a", "i", "\ue00a", "i", "w", "a" } },
+            { "こんにちは", new[] { "k", "o", "N", "n", "i", "\ue00a", "i", "w", "a" } },
+            { "konnichiwa", new[] { "k", "o", "N", "n", "i", "\ue00a", "i", "w", "a" } },
 
             // 小さい (chiisai) - contains "ち" (chi)
             { "小さい", new[] { "\ue00a", "i", "i", "s", "a", "i" } },
