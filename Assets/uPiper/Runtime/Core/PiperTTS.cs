@@ -1135,12 +1135,17 @@ namespace uPiper.Core
                 if (_config.DefaultLanguage == "ja" || _config.DefaultLanguage == "jp" ||
                     _config.DefaultLanguage == "japanese")
                 {
-#if !UNITY_WEBGL
+#if UNITY_WEBGL && !UNITY_EDITOR
+                    // Use WebGLTestPhonemizer for testing Unity.InferenceEngine on WebGL
+                    _phonemizer = new uPiper.Core.Phonemizers.WebGL.WebGLTestPhonemizer();
+                    PiperLogger.LogInfo("Initialized WebGLTestPhonemizer for Japanese (TEST MODE)");
+                    PiperLogger.LogWarning("This is a TEST phonemizer with fixed patterns for Unity.InferenceEngine verification");
+#elif !UNITY_WEBGL
                     _phonemizer = new OpenJTalkPhonemizer();
                     PiperLogger.LogInfo("Initialized OpenJTalkPhonemizer for Japanese");
 #else
-                    PiperLogger.LogWarning("OpenJTalkPhonemizer is not supported on WebGL platform");
-                    _phonemizer = null; // No phonemizer available on WebGL
+                    PiperLogger.LogWarning("OpenJTalkPhonemizer is not supported on WebGL platform in Editor");
+                    _phonemizer = null; // No phonemizer available on WebGL in Editor
 #endif
                 }
                 else
