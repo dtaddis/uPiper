@@ -20,8 +20,11 @@ namespace uPiper.Core.Phonemizers.WebGL
         private static extern void OpenJTalk_Initialize(Action<int> callback);
         
         [DllImport("__Internal")]
-        private static extern void OpenJTalk_Phonemize(string text, Action<int, string> callback);
-        
+        private static extern void OpenJTalk_Phonemize(string text, Action<int, IntPtr> callback);
+
+        [DllImport("__Internal")]
+        private static extern void OpenJTalk_FreeMemory(IntPtr ptr);
+
         [DllImport("__Internal")]
         private static extern void OpenJTalk_Dispose();
         
@@ -115,25 +118,43 @@ namespace uPiper.Core.Phonemizers.WebGL
         /// <summary>
         /// Static callback for phonemization
         /// </summary>
-        [AOT.MonoPInvokeCallback(typeof(Action<int, string>))]
-        private static void OnPhonemized(int success, string phonemes)
+        [AOT.MonoPInvokeCallback(typeof(Action<int, IntPtr>))]
+        private static void OnPhonemized(int success, IntPtr phonemesPtr)
         {
-            PiperLogger.LogInfo($"[WebGLOpenJTalkPhonemizer] Phonemize callback: success={success}, phonemes={phonemes}");
-            
-            if (success != 0 && !string.IsNullOrEmpty(phonemes))
+            string phonemes = null;
+
+            try
             {
-                // Split phonemes by space
-                var phonemeArray = phonemes.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                var result = new PhonemeResult
+                // Marshal pointer to string if valid
+                if (phonemesPtr != IntPtr.Zero)
                 {
-                    Phonemes = phonemeArray,
-                    OriginalText = null // Will be set by caller
-                };
-                _phonemizeTcs?.TrySetResult(result);
+                    phonemes = Marshal.PtrToStringUTF8(phonemesPtr);
+                    // Free JavaScript-allocated memory
+                    OpenJTalk_FreeMemory(phonemesPtr);
+                }
+
+                PiperLogger.LogInfo($"[WebGLOpenJTalkPhonemizer] Phonemize callback: success={success}, phonemes={phonemes}");
+
+                if (success != 0 && !string.IsNullOrEmpty(phonemes))
+                {
+                    // Split phonemes by space
+                    var phonemeArray = phonemes.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    var result = new PhonemeResult
+                    {
+                        Phonemes = phonemeArray,
+                        OriginalText = null // Will be set by caller
+                    };
+                    _phonemizeTcs?.TrySetResult(result);
+                }
+                else
+                {
+                    PiperLogger.LogError("[WebGLOpenJTalkPhonemizer] Phonemization failed");
+                    _phonemizeTcs?.TrySetResult(new PhonemeResult { Phonemes = new string[0] });
+                }
             }
-            else
+            catch (Exception ex)
             {
-                PiperLogger.LogError("[WebGLOpenJTalkPhonemizer] Phonemization failed");
+                PiperLogger.LogError($"[WebGLOpenJTalkPhonemizer] Error in callback: {ex.Message}");
                 _phonemizeTcs?.TrySetResult(new PhonemeResult { Phonemes = new string[0] });
             }
         }
