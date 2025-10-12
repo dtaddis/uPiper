@@ -903,7 +903,7 @@ namespace uPiper.Demo
                         .Split(' ', StringSplitOptions.RemoveEmptyEntries);
                     PiperLogger.LogInfo($"Fallback phonemes ({phonemes.Length}): {string.Join(" ", phonemes)}");
                 }
-#else
+#elif UNITY_WEBGL && !UNITY_EDITOR
                 // WebGL platform - use WebGLTestPhonemizer for Japanese
                 if (language == "ja")
                 {
@@ -937,6 +937,23 @@ namespace uPiper.Demo
                         .Replace("?", " _")
                         .Split(' ', StringSplitOptions.RemoveEmptyEntries);
                     PiperLogger.LogInfo($"English phonemes ({phonemes.Length}): {string.Join(" ", phonemes)}");
+                }
+#else
+                // WebGL Editor mode - cannot test WebGL phonemizer
+                if (language == "ja")
+                {
+                    throw new Exception("Japanese text-to-speech testing on WebGL is only supported in WebGL builds, not in Unity Editor with WebGL platform selected.\n\nPlease build for WebGL to test the WebGLTestPhonemizer.");
+                }
+                else
+                {
+                    // Basic fallback for English in Editor
+                    phonemes = _inputField.text.ToLower()
+                        .Replace(",", " _")
+                        .Replace(".", " _")
+                        .Replace("!", " _")
+                        .Replace("?", " _")
+                        .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    PiperLogger.LogInfo($"Editor fallback phonemes ({phonemes.Length}): {string.Join(" ", phonemes)}");
                 }
 #endif
 
