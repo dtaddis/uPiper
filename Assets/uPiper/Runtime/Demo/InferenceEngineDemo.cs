@@ -904,22 +904,44 @@ namespace uPiper.Demo
                     PiperLogger.LogInfo($"Fallback phonemes ({phonemes.Length}): {string.Join(" ", phonemes)}");
                 }
 #elif UNITY_WEBGL && !UNITY_EDITOR
-                // WebGL platform - use WebGLTestPhonemizer for Japanese
+                // WebGL platform - use WebGLOpenJTalkPhonemizer for arbitrary Japanese text
                 if (language == "ja")
                 {
-                    // Create WebGLTestPhonemizer for testing
-                    var webglPhonemizer = new uPiper.Core.Phonemizers.WebGL.WebGLTestPhonemizer();
+                    // Create WebGLOpenJTalkPhonemizer with OpenJTalk WASM support
+                    var webglPhonemizer = new uPiper.Core.Phonemizers.WebGL.WebGLOpenJTalkPhonemizer();
                     try
                     {
-                        PiperLogger.LogDebug("[InferenceEngineDemo] Using WebGLTestPhonemizer for Japanese text");
+                        PiperLogger.LogDebug("[InferenceEngineDemo] Initializing WebGLOpenJTalkPhonemizer...");
+
+                        // Initialize OpenJTalk WASM module
+                        var webglStopwatch = Stopwatch.StartNew();
+                        var initialized = await webglPhonemizer.InitializeAsync();
+                        if (!initialized)
+                        {
+                            throw new Exception("Failed to initialize WebGLOpenJTalkPhonemizer. Check browser console for details.");
+                        }
+                        timings["WebGLInit"] = webglStopwatch.ElapsedMilliseconds;
+                        PiperLogger.LogInfo($"[InferenceEngineDemo] WebGLOpenJTalkPhonemizer initialized in {webglStopwatch.ElapsedMilliseconds}ms");
+
+                        // Phonemize text using OpenJTalk WASM
+                        PiperLogger.LogDebug("[InferenceEngineDemo] Using WebGLOpenJTalkPhonemizer for Japanese text");
+                        PiperLogger.LogInfo($"[InferenceEngineDemo] Input text: '{_inputField.text}'");
+
+                        webglStopwatch.Restart();
                         var phonemeResult = await webglPhonemizer.PhonemizeAsync(_inputField.text, language);
-                        phonemes = phonemeResult.Phonemes;
-                        PiperLogger.LogInfo($"WebGLTestPhonemizer phonemes ({phonemes.Length}): {string.Join(" ", phonemes)}");
+                        timings["WebGLOpenJTalk"] = webglStopwatch.ElapsedMilliseconds;
+                        var openJTalkPhonemes = phonemeResult.Phonemes;
+
+                        PiperLogger.LogInfo($"[WebGLOpenJTalk] Raw phonemes ({openJTalkPhonemes.Length}): {string.Join(" ", openJTalkPhonemes)}");
+
+                        // Convert OpenJTalk phonemes to Piper phonemes (same as native platforms)
+                        phonemes = OpenJTalkToPiperMapping.ConvertToPiperPhonemes(openJTalkPhonemes);
+                        PiperLogger.LogInfo($"[WebGLOpenJTalk] Converted to Piper phonemes ({phonemes.Length}): {string.Join(" ", phonemes)}");
 
                         // Show phoneme details in UI
                         if (_phonemeDetailsText != null)
                         {
-                            _phonemeDetailsText.text = $"WebGLTestPhonemizer: {string.Join(" ", phonemes)}";
+                            _phonemeDetailsText.text = $"WebGLOpenJTalk:\nRaw: {string.Join(" ", openJTalkPhonemes)}\nPiper: {string.Join(" ", phonemes)}";
                         }
                     }
                     finally
@@ -942,7 +964,7 @@ namespace uPiper.Demo
                 // WebGL Editor mode - cannot test WebGL phonemizer
                 if (language == "ja")
                 {
-                    throw new Exception("Japanese text-to-speech testing on WebGL is only supported in WebGL builds, not in Unity Editor with WebGL platform selected.\n\nPlease build for WebGL to test the WebGLTestPhonemizer.");
+                    throw new Exception("Japanese text-to-speech testing on WebGL is only supported in WebGL builds, not in Unity Editor with WebGL platform selected.\n\nPlease build for WebGL to test the WebGLOpenJTalkPhonemizer with OpenJTalk WASM.");
                 }
                 else
                 {
